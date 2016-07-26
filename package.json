@@ -1,0 +1,23 @@
+{
+  "name": "h-dev-cloud-project-server",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dev-server-html5": "git+ssh://git@bitbucket.org/habemus-tutti/dev-server-html5.git",
+    "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "bluebird": "^3.4.1",
+    "gulp": "^3.9.1",
+    "gulp-istanbul": "^1.0.0",
+    "gulp-mocha": "^2.2.0",
+    "server-destroy": "^1.0.1",
+    "should": "^10.0.0"
+  }
+}
