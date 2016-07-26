@@ -32,7 +32,7 @@ describe('WorkspaceServer workspace serving', function () {
     if (!HOST) {
       var message = [
         'HOST envvar MUST be set.',
-        'Remember to ensure that the DNS resolves mozilla-sample-website.${HOST}:${PORT} to this server.',
+        'Remember to ensure that the DNS resolves mozilla-sample-website.${HOSTNAME} to this server.',
         'For example, if your HOST is set to `testhost.com` and PORT is 4000,',
         '`mozilla-sample-website.testhost.com:4000` has to be resolved to http://127.0.0.1:4000',
         'and `testhost.com:4000` has to be resolved to http://127.0.0.1:4000 as well',

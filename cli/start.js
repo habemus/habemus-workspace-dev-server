@@ -10,7 +10,8 @@ const createWorkspaceServer = require('../server');
 var options = {
   port: process.env.PORT,
   apiVersion: pkg.version,
-  workspaceFsRoot: process.env.WORKSPACE_FS_ROOT,
+  fsRoot: process.env.WORKSPACE_FS_ROOT,
+  idParsingStrategy: process.env.ID_PARSING_STRATEGY,
   host: process.env.HOST,
 };
 

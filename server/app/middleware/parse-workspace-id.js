@@ -4,7 +4,7 @@ const url = require('url');
 // third-party
 const Bluebird = require('bluebird');
 
-const PARSING_STRATEGIES = ['FROM_HOST', 'FROM_QUERY'];
+const PARSING_STRATEGIES = ['FROM_HOSTNAME', 'FROM_QUERY'];
 
 /**
  * Returns a middleware that parses the workspaceId from the subdomain.
@@ -23,10 +23,13 @@ function parseFromHost(app, appOpts, middlewareOpts) {
    * of the passed host.
    * @type {RegExp}
    */
-  const ID_REGEXP = new RegExp('(.+)\\.' + url.parse(appOpts.host).host + '$');
+  const ID_REGEXP = new RegExp('(.+)\\.' + url.parse(appOpts.host).hostname + '$');
 
   return function parseWorkspaceIdFromHost(req, res, next) {
-    var match = req.get('host').match(ID_REGEXP);
+    var match = req.hostname.match(ID_REGEXP);
+
+    console.log(url.parse(appOpts.host).host);
+    console.log(req.hostname);
 
     if (!match) {
 
@@ -77,7 +80,7 @@ module.exports = function (app, appOpts, middlewareOpts) {
   var strategy = middlewareOpts.strategy;
 
   switch (strategy) {
-    case 'FROM_HOST':
+    case 'FROM_HOSTNAME':
       return parseFromHost(app, appOpts, middlewareOpts);
     case 'FROM_QUERY':
       return parseFromQuery(app, appOpts, middlewareOpts);
