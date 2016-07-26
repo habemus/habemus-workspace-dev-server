@@ -14,10 +14,13 @@
   },
   "devDependencies": {
     "bluebird": "^3.4.1",
+    "cheerio": "^0.20.0",
+    "fs-extra": "^0.30.0",
     "gulp": "^3.9.1",
     "gulp-istanbul": "^1.0.0",
     "gulp-mocha": "^2.2.0",
     "server-destroy": "^1.0.1",
-    "should": "^10.0.0"
+    "should": "^10.0.0",
+    "superagent": "^2.1.0"
   }
 }

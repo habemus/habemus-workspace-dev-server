@@ -15,5 +15,5 @@ function InvalidOption(option, kind, message) {
 util.inherits(InvalidOption, WorkspaceServerError);
 InvalidOption.prototype.name = 'InvalidOption';
 
-
 exports.WorkspaceServerError = WorkspaceServerError;
+exports.InvalidOption        = InvalidOption;

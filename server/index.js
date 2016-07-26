@@ -5,6 +5,9 @@ const path = require('path');
 const express              = require('express');
 const createDevServerHTML5 = require('dev-server-html5');
 
+// own dependencies
+const errors = require('./app/errors');
+
 /**
  * Auxiliary function that joins two paths
  * We do not use path.join because it
@@ -30,6 +33,12 @@ module.exports = function (options) {
 
   var app = express();
 
+  /**
+   * Let errors available throughout the application
+   * @type {Object}
+   */
+  app.errors = errors;
+
   app.middleware = {};
   app.middleware.parseWorkspaceId = 
     require('./app/middleware/parse-workspace-id').bind(null, app, options);
@@ -48,6 +57,11 @@ module.exports = function (options) {
       }),
     })
   );
+
+  /**
+   * Error handling
+   */
+  require('./app/error-handlers')(app, options);
 
   return app;
 };

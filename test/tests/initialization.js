@@ -1,3 +1,7 @@
+// native
+const assert = require('assert');
+
+// third-party
 const should = require('should');
 const Bluebird = require('bluebird');
 
@@ -23,6 +27,47 @@ describe('WorkspaceServer initialization', function () {
     })
     .then(() => {
       return aux.teardown();
+    });
+  });
+
+  it('should require fsRoot to be passed', function () {
+    var options = aux.genOptions();
+
+    delete options.fsRoot;
+
+    assert.throws(function () {
+      createWorkspaceServerApp(options);
+    });
+  });
+
+  it('should require an idParsingStrategy option to be passed', function () {
+    var options = aux.genOptions();
+
+    delete options.idParsingStrategy;
+
+    assert.throws(function () {
+      createWorkspaceServerApp(options);
+    });
+  });
+
+  it('should require a valid idParsingStrategy option to be passed', function () {
+    var options = aux.genOptions();
+
+    options.idParsingStrategy = 'INVALID_STRATEGY';
+
+    assert.throws(function () {
+      createWorkspaceServerApp(options);
+    });
+  });
+
+  it('should require a host option if the idParsingStrategy is FROM_HOST', function () {
+    var options = aux.genOptions();
+
+    options.idParsingStrategy = 'FROM_HOST';
+    delete options.host;
+
+    assert.throws(function () {
+      createWorkspaceServerApp(options);
     });
   });
 });

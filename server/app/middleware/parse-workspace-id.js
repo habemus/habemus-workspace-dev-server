@@ -4,7 +4,7 @@ const url = require('url');
 // third-party
 const Bluebird = require('bluebird');
 
-const PARSING_STRATEGIES = ['FROM_HOST', 'FROM_QUERY', 'FROM_PATH'];
+const PARSING_STRATEGIES = ['FROM_HOST', 'FROM_QUERY'];
 
 /**
  * Returns a middleware that parses the workspaceId from the subdomain.
@@ -17,7 +17,7 @@ function parseFromHost(app, appOpts, middlewareOpts) {
   if (!appOpts.host) {
     throw new Error('host is required');
   }
-
+  
   /**
    * Regular expression that matches a subdomain
    * of the passed host.

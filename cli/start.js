@@ -12,11 +12,6 @@ var options = {
   apiVersion: pkg.version,
   workspaceFsRoot: process.env.WORKSPACE_FS_ROOT,
   host: process.env.HOST,
-
-  injectScripts: [
-    'http://some-host.com/somescript.js',
-    'http://another-host.com/another.js',
-  ]
 };
 
 var app = createWorkspaceServer(options);

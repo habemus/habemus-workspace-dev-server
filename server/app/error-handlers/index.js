@@ -3,9 +3,8 @@ const errors = require('../errors');
 module.exports = function (app, options) {
 
   app.use(function (err, req, res, next) {
-    if (err instanceof errors.WorkspaceServerError) {
 
-      console.log(err);
+    if (err instanceof errors.WorkspaceServerError) {
 
       switch (err.name) {
         case 'InvalidOption':

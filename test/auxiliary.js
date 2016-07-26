@@ -3,9 +3,11 @@ const path = require('path');
 const http = require('http');
 
 // third-party dependencies
-const Bluebird = require('bluebird');
+const Bluebird      = require('bluebird');
 const enableDestroy = require('server-destroy');
+const fse           = require('fs-extra');
 
+const FIXTURES_ROOT_PATH = path.join(__dirname, 'fixtures');
 const TMP_ROOT_PATH = path.join(__dirname, 'tmp');
 
 exports.defaultOptions = {
@@ -15,6 +17,7 @@ exports.defaultOptions = {
   // use the `FROM_QUERY` strategy for tests
   // as it does not depend upon DNS resolution
   idParsingStrategy: 'FROM_QUERY',
+  injectScripts: 'http://test.habemus.com/injected-script.js',
 };
 
 /**
@@ -89,7 +92,18 @@ exports.setup = function () {
 
   var _assets = {};
 
-  return _assetsç
+  _assets.fixturesRootPath = FIXTURES_ROOT_PATH;
+
+  _assets.tmpRootPath = TMP_ROOT_PATH;
+
+  // empty the tmpRootPath
+  fse.emptyDirSync(TMP_ROOT_PATH);
+
+  exports.registerTeardown(function () {
+    fse.emptyDirSync(TMP_ROOT_PATH);
+  })
+
+  return Bluebird.resolve(_assets);
 };
 
 var TEARDOWN_CALLBACKS = [];
