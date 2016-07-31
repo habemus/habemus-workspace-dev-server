@@ -9,8 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.4.1",
     "dev-server-html5": "git+ssh://git@bitbucket.org/habemus-tutti/dev-server-html5.git",
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "mongoose": "^4.5.7",
+    "vroot": "git+ssh://git@bitbucket.org/habemus-tutti/vroot.git"
   },
   "devDependencies": {
     "bluebird": "^3.4.1",

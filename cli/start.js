@@ -11,7 +11,7 @@ var options = {
   port: process.env.PORT,
   apiVersion: pkg.version,
   fsRoot: process.env.WORKSPACE_FS_ROOT,
-  idParsingStrategy: process.env.ID_PARSING_STRATEGY,
+  codeParsingStrategy: process.env.CODE_PARSING_STRATEGY,
   host: process.env.HOST,
 };
 

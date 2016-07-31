@@ -15,5 +15,12 @@ function InvalidOption(option, kind, message) {
 util.inherits(InvalidOption, WorkspaceServerError);
 InvalidOption.prototype.name = 'InvalidOption';
 
+function NotFound(identifier) {
+  WorkspaceServerError.call(this, 'not found ' + identifier);
+}
+util.inherits(NotFound, WorkspaceServerError);
+NotFound.prototype.name = 'NotFound';
+
 exports.WorkspaceServerError = WorkspaceServerError;
 exports.InvalidOption        = InvalidOption;
+exports.NotFound             = NotFound;

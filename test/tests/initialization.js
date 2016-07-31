@@ -20,11 +20,14 @@ describe('WorkspaceServer initialization', function () {
 
     server.on('request', app);
 
-    return new Bluebird((resolve, reject) => {
-      server.listen(4000, () => {
-        resolve();
-      });
-    })
+    return Bluebird.all([
+      app.ready,
+      new Bluebird((resolve, reject) => {
+        server.listen(4000, () => {
+          resolve();
+        });
+      }),
+    ])
     .then(() => {
       return aux.teardown();
     });
@@ -40,34 +43,40 @@ describe('WorkspaceServer initialization', function () {
     });
   });
 
-  it('should require an idParsingStrategy option to be passed', function () {
+  it('should require an codeParsingStrategy option to be passed', function () {
     var options = aux.genOptions();
 
-    delete options.idParsingStrategy;
+    delete options.codeParsingStrategy;
 
     assert.throws(function () {
       createWorkspaceServerApp(options);
     });
   });
 
-  it('should require a valid idParsingStrategy option to be passed', function () {
+  it('should require a valid codeParsingStrategy option to be passed', function () {
     var options = aux.genOptions();
 
-    options.idParsingStrategy = 'INVALID_STRATEGY';
+    options.codeParsingStrategy = 'INVALID_STRATEGY';
 
-    assert.throws(function () {
-      createWorkspaceServerApp(options);
-    });
+    var app = createWorkspaceServerApp(options);
+
+    return app.ready.then(aux.errorExpected)
+      .catch((err) => {
+        console.log(err);
+      });
   });
 
-  it('should require a host option if the idParsingStrategy is FROM_HOST', function () {
+  it('should require a host option if the codeParsingStrategy is FROM_HOSTNAME', function () {
     var options = aux.genOptions();
 
-    options.idParsingStrategy = 'FROM_HOST';
+    options.codeParsingStrategy = 'FROM_HOSTNAME';
     delete options.host;
 
-    assert.throws(function () {
-      createWorkspaceServerApp(options);
-    });
+    return createWorkspaceServerApp(options)
+      .ready
+      .then(aux.errorExpected)
+      .catch((err) => {
+        console.log(err);
+      });
   });
 });

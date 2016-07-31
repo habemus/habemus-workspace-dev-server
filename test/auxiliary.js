@@ -5,18 +5,23 @@ const http = require('http');
 // third-party dependencies
 const Bluebird      = require('bluebird');
 const enableDestroy = require('server-destroy');
+const MongoClient   = require('mongodb').MongoClient;
 const fse           = require('fs-extra');
 
 const FIXTURES_ROOT_PATH = path.join(__dirname, 'fixtures');
 const TMP_ROOT_PATH = path.join(__dirname, 'tmp');
 
+const TEST_DB_URI = 'mongodb://localhost:27017/h-dev-test-db';
+
 exports.defaultOptions = {
   apiVersion: '0.0.0',
   fsRoot: TMP_ROOT_PATH,
 
+  mongodbURI: TEST_DB_URI,
+  
   // use the `FROM_QUERY` strategy for tests
   // as it does not depend upon DNS resolution
-  idParsingStrategy: 'FROM_QUERY',
+  codeParsingStrategy: 'FROM_QUERY',
   injectScripts: 'http://test.habemus.com/injected-script.js',
 };
 
@@ -103,7 +108,28 @@ exports.setup = function () {
     fse.emptyDirSync(TMP_ROOT_PATH);
   })
 
-  return Bluebird.resolve(_assets);
+
+
+  // connect to the database and drop it
+  return MongoClient.connect(TEST_DB_URI)
+    .then((db) => {
+
+      _assets.db = db;
+
+      // register db teardown
+      exports.registerTeardown(function dropDatabase() {
+        // drop database
+        return _assets.db.dropDatabase().then(() => {
+          return _assets.db.close();
+        });
+      });
+
+      return _assets.db.dropDatabase();
+    }).then(() => {
+
+      // finally return assets
+      return _assets;
+    });
 };
 
 var TEARDOWN_CALLBACKS = [];

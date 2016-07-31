@@ -22,29 +22,53 @@ describe('WorkspaceServer workspace serving', function () {
         ASSETS = assets;
 
         var server = aux.createTeardownServer();
-        var app = createWorkspaceServerApp(aux.genOptions());
+
+        var options = aux.genOptions({
+          injectScripts: 'http://test.habemus.com/injected-script.js,http://test2.habemus.com/yet-another-script.js',
+        });
+
+        ASSETS.injectScripts = options.injectScripts;
+
+        var app = createWorkspaceServerApp(options);
+
+        // make the app available in the ASSETS object
+        ASSETS.app = app;
 
         server.on('request', app);
         ASSETS.serverURI = 'http://localhost:4000';
-
-        return new Bluebird((resolve, reject) => {
-          server.listen(4000, () => {
-            resolve();
-          });
-        });
+        
+        return Bluebird.all([
+          app.ready,
+          new Bluebird((resolve, reject) => {
+            server.listen(4000, () => {
+              resolve();
+            });
+          }),
+        ]);
       })
       .then(() => {
-        // move some projects over to the tmpRootPath
+
+        // emulate the creation of a workspace
+        ASSETS.workspaceCode = 'my-workspace';
+        ASSETS.workspaceId   = '110ec58a-a0f2-4ac4-8393-c866d813b8d1';
+
         fse.copySync(
           ASSETS.fixturesRootPath + '/mozilla-sample-website',
-          ASSETS.tmpRootPath + '/mozilla-sample-website'
+          ASSETS.tmpRootPath + '/' + ASSETS.workspaceId
         );
 
-        fse.copySync(
-          ASSETS.fixturesRootPath + '/html5up-phantom',
-          ASSETS.tmpRootPath + '/html5up-phantom'
-        );
+        const Workspace = ASSETS.app.services.mongoose.models.Workspace;
 
+        var workspace = new Workspace({
+          code: ASSETS.workspaceCode,
+          _id: ASSETS.workspaceId,
+        });
+
+        return workspace.save();
+      })
+      .catch((err) => {
+        console.warn(err);
+        return Bluebird.reject(err);
       });
   });
 
@@ -54,8 +78,9 @@ describe('WorkspaceServer workspace serving', function () {
 
   it('should serve the workspace files', function () {
 
-    var workspaceId = 'mozilla-sample-website';
-    var file        = 'index.html';
+    var workspaceCode = ASSETS.workspaceCode;
+    var workspaceId   = ASSETS.workspaceId;
+    var file          = 'index.html';
 
     var testDOMSelector = 'ul li';
 
@@ -67,7 +92,7 @@ describe('WorkspaceServer workspace serving', function () {
     return new Bluebird((resolve, reject) => {
       superagent.get(ASSETS.serverURI + '/' + file)
         .query({
-          workspaceId: workspaceId,
+          workspaceCode: workspaceCode,
         })
         .end((err, res) => {
 
@@ -79,7 +104,6 @@ describe('WorkspaceServer workspace serving', function () {
     })
     .then((html) => {
 
-
       var $modified = cheerio.load(html);
 
       $modified(testDOMSelector)
@@ -90,7 +114,7 @@ describe('WorkspaceServer workspace serving', function () {
 
   });
 
-  it('should not serve files if no workspaceId is passed', function () {
+  it('should not serve files if no workspaceCode is passed', function () {
     return new Bluebird((resolve, reject) => {
       superagent.get(ASSETS.serverURI + '/index.html')
         .end((err, res) => {
@@ -105,11 +129,11 @@ describe('WorkspaceServer workspace serving', function () {
     });
   });
 
-  it('should not serve files if the passed workspaceId does not exist', function () {
+  it('should not serve files if the passed workspaceCode does not exist', function () {
     return new Bluebird((resolve, reject) => {
       superagent.get(ASSETS.serverURI + '/index.html')
         .query({
-          workspaceId: 'fake-workspace',
+          workspaceCode: 'fake-workspace',
         })
         .end((err, res) => {
           if (err) {
@@ -136,5 +160,36 @@ describe('WorkspaceServer workspace serving', function () {
           reject(new Error('error expected'));
         });
     });
+  });
+
+  it('should inject required scripts into the served html file', function () {
+
+    var workspaceCode = ASSETS.workspaceCode;
+    var file          = 'index.html';
+
+    return new Bluebird((resolve, reject) => {
+      superagent.get(ASSETS.serverURI + '/' + file)
+        .query({
+          workspaceCode: workspaceCode,
+        })
+        .end((err, res) => {
+
+          if (err) {
+            return reject(err);
+          }
+          resolve(res.text);
+        });
+    })
+    .then((html) => {
+
+      var $modified = cheerio.load(html);
+
+      var scripts = ASSETS.injectScripts.split(',');
+
+      scripts.forEach((scriptSrc) => {
+        $modified('script[src="' + scriptSrc + '"]').length.should.equal(1);
+      });
+    });
+
   });
 });

@@ -8,11 +8,10 @@ module.exports = function (app, options) {
 
       switch (err.name) {
         case 'InvalidOption':
-
-          if (err.option === 'workspaceId') {
-            res.status(404).end();
-          }
-
+          res.status(404).end();
+          break;
+        case 'NotFound':
+          res.status(404).end();
           break;
         default:
           next(err);

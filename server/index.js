@@ -8,29 +8,22 @@ const createDevServerHTML5 = require('dev-server-html5');
 // own dependencies
 const errors = require('./app/errors');
 
-/**
- * Auxiliary function that joins two paths
- * We do not use path.join because it
- * executes interpretations of relative paths ('..')
- * @param  {String} p1
- * @param  {String} p2
- * @return {String}
- */
-const TRAILING_SLASH_RE = /\/$/;
-const LEADING_SLASH_RE  = /^\//;
-function _joinPaths(p1, p2) {
-  return p1.replace(TRAILING_SLASH_RE, '') + '/' + p2.replace(LEADING_SLASH_RE, '');
-}
+const setupServices = require('./app/services');
 
 module.exports = function (options) {
   if (!options.fsRoot) { throw new Error('fsRoot is required'); }
-  if (!options.idParsingStrategy) { throw new Error('idParsingStrategy is required'); }
+  if (!options.codeParsingStrategy) { throw new Error('codeParsingStrategy is required'); }
+  if (!options.mongodbURI) { throw new Error('mongodbURI is required'); }
 
   const fsRoot = options.fsRoot;
 
   var injectScripts = options.injectScripts || [];
   injectScripts = Array.isArray(injectScripts) ? injectScripts : injectScripts.split(',');
 
+  /**
+   * The main express router
+   * @type {Express Router}
+   */
   var app = express();
 
   /**
@@ -39,29 +32,46 @@ module.exports = function (options) {
    */
   app.errors = errors;
 
-  app.middleware = {};
-  app.middleware.parseWorkspaceId = 
-    require('./app/middleware/parse-workspace-id').bind(null, app, options);
-
-  app.use(
-    app.middleware.parseWorkspaceId({ strategy: options.idParsingStrategy }),
-    function setProjectRoot(req, res, next) {
-      req.projectRoot = _joinPaths(fsRoot, req.workspaceId);
-
-      next();
-    },
-    createDevServerHTML5({
-      apiVersion: options.apiVersion,
-      htmlInjections: injectScripts.map((scriptSrc) => {
-        return '<script src="' + scriptSrc + '"></script>';
-      }),
-    })
-  );
-
   /**
-   * Error handling
+   * Setup services
    */
-  require('./app/error-handlers')(app, options);
+  app.ready = setupServices(app, options).then(() => {
+    
+    app.middleware = {};
+    app.middleware.parseWorkspaceCode = 
+      require('./app/middleware/parse-workspace-code').bind(null, app);
+    app.middleware.loadWorkspaceFsRoot =
+      require('./app/middleware/load-workspace-fs-root').bind(null, app);
+
+    // define routing
+    app.use(
+      app.middleware.parseWorkspaceCode({
+        as: 'workspaceCode',
+        host: options.host,
+        strategy: options.codeParsingStrategy
+      }),
+      app.middleware.loadWorkspaceFsRoot({
+        // set the projectRoot to have the workspaceFsRoot
+        // as the projectRoot is the property
+        // used by dev-server-html5
+        // 
+        // TODO: change that property to a more neutral one,
+        // such as `fsRoot`. Work must be done in dev-server-html5
+        as: 'projectRoot',
+      }),
+      createDevServerHTML5({
+        apiVersion: options.apiVersion,
+        htmlInjections: injectScripts.map((scriptSrc) => {
+          return '<script src="' + scriptSrc + '"></script>';
+        }),
+      })
+    );
+
+    /**
+     * Error handling
+     */
+    require('./app/error-handlers')(app, options);
+  });
 
   return app;
 };
