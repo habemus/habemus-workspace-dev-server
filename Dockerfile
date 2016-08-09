@@ -9,6 +9,7 @@ WORKDIR /application
 ENV PORT 5001
 
 # directories that must be mounted at run
+ENV MONGODB_URI_PATH  /etc/h-dev-cloud/mongodb-uri
 ENV WORKSPACE_FS_ROOT /data/workspaces
 
 ENTRYPOINT ["node", "/application/cli/start.js"]

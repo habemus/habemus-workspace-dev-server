@@ -1,6 +1,6 @@
 {
   "name": "h-dev-cloud-project-server",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "server/index.js",
   "scripts": {
