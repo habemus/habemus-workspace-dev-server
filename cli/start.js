@@ -1,5 +1,6 @@
 // native dependencies
 const http = require('http');
+const fs   = require('fs');
 
 // internal dependencies
 const pkg = require('../package.json');
