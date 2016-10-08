@@ -1,5 +1,5 @@
 {
-  "name": "h-dev-cloud-workspace-server",
+  "name": "h-workspace-server",
   "version": "0.2.1",
   "description": "",
   "main": "server/index.js",
