@@ -7,7 +7,7 @@ const Bluebird = require('bluebird');
 const PARSING_STRATEGIES = ['FROM_HOSTNAME', 'FROM_QUERY'];
 
 /**
- * Returns a middleware that parses the workspaceCode from the subdomain.
+ * Returns a middleware that parses the code from the subdomain.
  * @param  {Express app} app
  * @param  {Object} options
  * @return {Express middleware Function}
@@ -27,15 +27,12 @@ function parseFromHost(app, options) {
   return function parseWorkspaceIdFromHost(req, res, next) {
     var match = req.hostname.match(ID_REGEXP);
 
-    console.log(url.parse(options.host).host);
-    console.log(req.hostname);
-
     if (!match) {
 
-      next(new app.errors.InvalidOption('workspaceCode', 'required'));
+      next(new app.errors.NotFound('code', 'required'));
 
     } else {
-      req.workspaceCode = match[1];
+      req.code = match[1];
       next();
     }
 
@@ -43,7 +40,7 @@ function parseFromHost(app, options) {
 }
 
 /**
- * Returns a middleware that parses the workspaceCode from the subdomain.
+ * Returns a middleware that parses the code from the subdomain.
  * @param  {Express app} app
  * @param  {Object} options
  * @return {Express middleware Function}
@@ -51,13 +48,13 @@ function parseFromHost(app, options) {
 function parseFromQuery(app, options) {
   return function (req, res, next) {
 
-    var workspaceCode = req.query.workspaceCode;
+    var code = req.query.code;
 
-    if (!workspaceCode) {
-      next(new app.errors.InvalidOption('workspaceCode', 'required'));
+    if (!code) {
+      next(new app.errors.NotFound('code', 'required'));
     } else {
 
-      req.workspaceCode = workspaceCode;
+      req.code = code;
       next();
     }
 
@@ -67,7 +64,7 @@ function parseFromQuery(app, options) {
 /**
  * Meta middleware generator.
  * Simply passes the arguments to the actual middleware generator.
- * Returns a middleware that parses the workspaceCode from the subdomain.
+ * Returns a middleware that parses the code from the subdomain.
  * @param  {Express app} app
  * @param  {Object} options
  * @return {Express middleware Function}

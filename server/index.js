@@ -13,9 +13,8 @@ const setupServices = require('./services');
 module.exports = function (options) {
   if (!options.fsRoot) { throw new Error('fsRoot is required'); }
   if (!options.codeParsingStrategy) { throw new Error('codeParsingStrategy is required'); }
-  if (!options.mongodbURI) { throw new Error('mongodbURI is required'); }
-
-  const fsRoot = options.fsRoot;
+  if (!options.hWorkspaceURI) { throw new Error('hWorkspaceURI is required'); }
+  if (!options.hWorkspaceToken) { throw new Error('hWorkspaceToken is required'); }
 
   var injectScripts = options.injectScripts || [];
   injectScripts = Array.isArray(injectScripts) ? injectScripts : injectScripts.split(',');
@@ -38,19 +37,21 @@ module.exports = function (options) {
   app.ready = setupServices(app, options).then(() => {
     
     app.middleware = {};
-    app.middleware.parseWorkspaceCode = 
-      require('./middleware/parse-workspace-code').bind(null, app);
+    app.middleware.parseCode = 
+      require('./middleware/parse-code').bind(null, app);
     app.middleware.loadWorkspaceFsRoot =
       require('./middleware/load-workspace-fs-root').bind(null, app);
 
     // define routing
     app.use(
-      app.middleware.parseWorkspaceCode({
+      app.middleware.parseCode({
         as: 'workspaceCode',
         host: options.host,
         strategy: options.codeParsingStrategy
       }),
       app.middleware.loadWorkspaceFsRoot({
+        hWorkspaceToken: options.hWorkspaceToken,
+
         // set the projectRoot to have the workspaceFsRoot
         // as the projectRoot is the property
         // used by dev-server-html5
@@ -70,7 +71,7 @@ module.exports = function (options) {
     /**
      * Error handling
      */
-    require('./error-handlers')(app, options);
+    require('./error-handlers/h-workspace-server-error')(app, options);
   });
 
   return app;

@@ -10,10 +10,12 @@ module.exports = function (app, options) {
 
   options = options || {};
 
+  const H_WORKSPACE_TOKEN = options.hWorkspaceToken;
+
   const errors = app.errors;
 
   /**
-   * The default workspaceCode loader retrieves the 
+   * The default code loader retrieves the 
    * value directly from the request object.
    * It expects `parse-workspace-code` to have been executed
    * before
@@ -21,8 +23,8 @@ module.exports = function (app, options) {
    * @param  {Express Request} req
    * @return {String}
    */
-  const _workspaceCode = options.workspaceCode || function (req) {
-    return req.workspaceCode;
+  const _code = options.code || function (req) {
+    return req.code;
   }
 
   /**
@@ -33,28 +35,41 @@ module.exports = function (app, options) {
 
   return function buildWorkspaceFsRoot(req, res, next) {
     var as   = aux.evaluateOpt(_as, req);
-    var code = aux.evaluateOpt(_workspaceCode, req);
+    var code = aux.evaluateOpt(_code, req);
 
-    // fetch the database entry for the workspace requested
-    var workspaceQuery = { code: code };
-    Bluebird.resolve(
-      app.services.mongoose.models.Workspace.findOne(workspaceQuery)
-    )
-    .then((workspace) => {
 
-      if (!workspace) {
-        return Bluebird.reject(new errors.NotFound(code));
-      }
+    // get the workspace that corresponds to the given code
+    app.services.hWorkspace.get(H_WORKSPACE_TOKEN, code, { byProjectCode: true })
+      .then((workspace) => {
 
-      var workspaceId = workspace._id;
-      var workspaceRoot = app.services
-        .workspacesVroot
-        .joinAbsolutePath(workspaceId);
+        var workspaceRoot = app.services.workspacesRoot.prependTo(workspace._id);
 
-      req[as] = workspaceRoot;
+        req[as] = workspaceRoot;
 
-      next();
-    })
-    .catch(next);
+        next();
+      })
+      .catch(next);
+
+    // // fetch the database entry for the workspace requested
+    // var workspaceQuery = { code: code };
+    // Bluebird.resolve(
+    //   app.services.mongoose.models.Workspace.findOne(workspaceQuery)
+    // )
+    // .then((workspace) => {
+
+    //   if (!workspace) {
+    //     return Bluebird.reject(new errors.NotFound(code));
+    //   }
+
+    //   var workspaceId = workspace._id;
+    //   var workspaceRoot = app.services
+    //     .workspacesVroot
+    //     .joinAbsolutePath(workspaceId);
+
+    //   req[as] = workspaceRoot;
+
+    //   next();
+    // })
+    // .catch(next);
   };
 };

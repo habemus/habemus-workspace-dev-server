@@ -1,26 +1,26 @@
 // native
 const util = require('util');
 
-function WorkspaceServerError(message) {
+function HWorkspaceServerError(message) {
   Error.call(this, message);
 }
-util.inherits(WorkspaceServerError, Error);
-WorkspaceServerError.prototype.name = 'WorkspaceServerError';
+util.inherits(HWorkspaceServerError, Error);
+HWorkspaceServerError.prototype.name = 'HWorkspaceServerError';
 
 function InvalidOption(option, kind, message) {
-  WorkspaceServerError.call(this, message);
+  HWorkspaceServerError.call(this, message);
   this.option = option;
   this.kind = kind;
 }
-util.inherits(InvalidOption, WorkspaceServerError);
+util.inherits(InvalidOption, HWorkspaceServerError);
 InvalidOption.prototype.name = 'InvalidOption';
 
 function NotFound(identifier) {
-  WorkspaceServerError.call(this, 'not found ' + identifier);
+  HWorkspaceServerError.call(this, 'not found ' + identifier);
 }
-util.inherits(NotFound, WorkspaceServerError);
+util.inherits(NotFound, HWorkspaceServerError);
 NotFound.prototype.name = 'NotFound';
 
-exports.WorkspaceServerError = WorkspaceServerError;
-exports.InvalidOption        = InvalidOption;
-exports.NotFound             = NotFound;
+exports.HWorkspaceServerError = HWorkspaceServerError;
+exports.InvalidOption         = InvalidOption;
+exports.NotFound              = NotFound;

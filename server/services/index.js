@@ -1,19 +1,19 @@
 // third-party
 const Bluebird = require('bluebird');
 
-const setupWorkspacesVroot = require('./workspaces-vroot');
-const setupMongooseService = require('./mongoose');
-
 module.exports = function (app, options) {
   
-  // instantiate services
-  app.services = {};
-  
   return Bluebird.all([
-    setupWorkspacesVroot(app, options),
-    setupMongooseService(app, options),
+    require('./workspaces-root')(app, options),
+    require('./h-workspace')(app, options),
   ])
-  .then(() => {
+  .then((services) => {
+  
+    app.services = {
+      workspacesRoot: services[0],
+      hWorkspace: services[1],
+    };
+
     // ensure nothing is returned by the promise
     return;
   });

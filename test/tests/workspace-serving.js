@@ -17,6 +17,8 @@ describe('WorkspaceServer workspace serving', function () {
 
   beforeEach(function () {
 
+    var mocks = aux.enableHMocks();
+
     return aux.setup()
       .then((assets) => {
         ASSETS = assets;
@@ -48,23 +50,19 @@ describe('WorkspaceServer workspace serving', function () {
       })
       .then(() => {
 
+        ASSETS.workspace = {
+          _id: 'some-workspace-id',
+          projectCode: 'my-project',
+          projectId: 'some-project-id',
+        };
+
         // emulate the creation of a workspace
-        ASSETS.workspaceCode = 'my-workspace';
-        ASSETS.workspaceId   = '110ec58a-a0f2-4ac4-8393-c866d813b8d1';
+        mocks.hWorkspaceMock._addWorkspace(ASSETS.workspace);
 
         fse.copySync(
           ASSETS.fixturesRootPath + '/mozilla-sample-website',
-          ASSETS.tmpRootPath + '/' + ASSETS.workspaceId
+          ASSETS.tmpRootPath + '/' + ASSETS.workspace._id
         );
-
-        const Workspace = ASSETS.app.services.mongoose.models.Workspace;
-
-        var workspace = new Workspace({
-          code: ASSETS.workspaceCode,
-          _id: ASSETS.workspaceId,
-        });
-
-        return workspace.save();
       })
       .catch((err) => {
         console.warn(err);
@@ -78,9 +76,9 @@ describe('WorkspaceServer workspace serving', function () {
 
   it('should serve the workspace files', function () {
 
-    var workspaceCode = ASSETS.workspaceCode;
-    var workspaceId   = ASSETS.workspaceId;
-    var file          = 'index.html';
+    var projectCode = ASSETS.workspace.projectCode;
+    var workspaceId = ASSETS.workspace._id;
+    var file        = 'index.html';
 
     var testDOMSelector = 'ul li';
 
@@ -92,7 +90,7 @@ describe('WorkspaceServer workspace serving', function () {
     return new Bluebird((resolve, reject) => {
       superagent.get(ASSETS.serverURI + '/' + file)
         .query({
-          workspaceCode: workspaceCode,
+          code: projectCode,
         })
         .end((err, res) => {
 
@@ -164,13 +162,13 @@ describe('WorkspaceServer workspace serving', function () {
 
   it('should inject required scripts into the served html file', function () {
 
-    var workspaceCode = ASSETS.workspaceCode;
-    var file          = 'index.html';
+    var projectCode = ASSETS.workspace.projectCode;
+    var file        = 'index.html';
 
     return new Bluebird((resolve, reject) => {
       superagent.get(ASSETS.serverURI + '/' + file)
         .query({
-          workspaceCode: workspaceCode,
+          code: projectCode,
         })
         .end((err, res) => {
 

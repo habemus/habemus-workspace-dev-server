@@ -8,6 +8,10 @@ const enableDestroy = require('server-destroy');
 const MongoClient   = require('mongodb').MongoClient;
 const fse           = require('fs-extra');
 
+// mocks
+const mockery       = require('mockery');
+const mockPrivateHWorkspace = require('h-workspace-client/mock/private');
+
 const FIXTURES_ROOT_PATH = path.join(__dirname, 'fixtures');
 const TMP_ROOT_PATH = path.join(__dirname, 'tmp');
 
@@ -17,12 +21,40 @@ exports.defaultOptions = {
   apiVersion: '0.0.0',
   fsRoot: TMP_ROOT_PATH,
 
-  mongodbURI: TEST_DB_URI,
+  hWorkspaceURI: 'http://localhost:9001',
+  hWorkspaceToken: 'some-workspace-token',
   
   // use the `FROM_QUERY` strategy for tests
   // as it does not depend upon DNS resolution
   codeParsingStrategy: 'FROM_QUERY',
   injectScripts: 'http://test.habemus.com/injected-script.js',
+};
+
+/**
+ * Enables mockery for h-modules
+ */
+exports.enableHMocks = function () {
+  mockery.enable({
+    warnOnReplace: false,
+    warnOnUnregistered: false,
+    useCleanCache: true
+  });
+
+  var hWorkspaceMock = mockPrivateHWorkspace({
+    data: {
+      workspaces: []
+    },
+  });
+
+  // mock h-workspace-client/private
+  mockery.registerMock(
+    'h-workspace-client/private',
+    hWorkspaceMock
+  );
+
+  return {
+    hWorkspaceMock: hWorkspaceMock,
+  }
 };
 
 /**
@@ -146,6 +178,10 @@ exports.registerTeardown = function (teardown) {
  * Executes all functions listed at TEARDOWN_CALLBACKS
  */
 exports.teardown = function () {
+
+  // disable mockery
+  mockery.disable();
+
   return Promise.all(TEARDOWN_CALLBACKS.map((fn) => {
     return fn();
   }))
