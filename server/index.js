@@ -6,9 +6,9 @@ const express              = require('express');
 const createDevServerHTML5 = require('dev-server-html5');
 
 // own dependencies
-const errors = require('./app/errors');
+const errors = require('./errors');
 
-const setupServices = require('./app/services');
+const setupServices = require('./services');
 
 module.exports = function (options) {
   if (!options.fsRoot) { throw new Error('fsRoot is required'); }
@@ -39,9 +39,9 @@ module.exports = function (options) {
     
     app.middleware = {};
     app.middleware.parseWorkspaceCode = 
-      require('./app/middleware/parse-workspace-code').bind(null, app);
+      require('./middleware/parse-workspace-code').bind(null, app);
     app.middleware.loadWorkspaceFsRoot =
-      require('./app/middleware/load-workspace-fs-root').bind(null, app);
+      require('./middleware/load-workspace-fs-root').bind(null, app);
 
     // define routing
     app.use(
@@ -70,7 +70,7 @@ module.exports = function (options) {
     /**
      * Error handling
      */
-    require('./app/error-handlers')(app, options);
+    require('./error-handlers')(app, options);
   });
 
   return app;
