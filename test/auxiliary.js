@@ -20,14 +20,10 @@ const TEST_DB_URI = 'mongodb://localhost:27017/h-dev-test-db';
 exports.defaultOptions = {
   apiVersion: '0.0.0',
   fsRoot: TMP_ROOT_PATH,
+  host: 'http://habemus.io',
 
   hWorkspaceURI: 'http://localhost:9001',
   hWorkspaceToken: 'some-workspace-token',
-  
-  // use the `FROM_QUERY` strategy for tests
-  // as it does not depend upon DNS resolution
-  codeParsingStrategy: 'FROM_QUERY',
-  injectScripts: 'http://test.habemus.com/injected-script.js',
 };
 
 /**

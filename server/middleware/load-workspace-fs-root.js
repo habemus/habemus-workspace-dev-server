@@ -34,9 +34,8 @@ module.exports = function (app, options) {
   const _as = options.as || 'workspaceRoot';
 
   return function buildWorkspaceFsRoot(req, res, next) {
-    var as   = aux.evaluateOpt(_as, req);
-    var code = aux.evaluateOpt(_code, req);
-
+    var as   = aux.evalOpt(_as, req);
+    var code = aux.evalOpt(_code, req);
 
     // get the workspace that corresponds to the given code
     app.services.hWorkspace.get(H_WORKSPACE_TOKEN, code, { byProjectCode: true })
@@ -48,28 +47,12 @@ module.exports = function (app, options) {
 
         next();
       })
-      .catch(next);
-
-    // // fetch the database entry for the workspace requested
-    // var workspaceQuery = { code: code };
-    // Bluebird.resolve(
-    //   app.services.mongoose.models.Workspace.findOne(workspaceQuery)
-    // )
-    // .then((workspace) => {
-
-    //   if (!workspace) {
-    //     return Bluebird.reject(new errors.NotFound(code));
-    //   }
-
-    //   var workspaceId = workspace._id;
-    //   var workspaceRoot = app.services
-    //     .workspacesVroot
-    //     .joinAbsolutePath(workspaceId);
-
-    //   req[as] = workspaceRoot;
-
-    //   next();
-    // })
-    // .catch(next);
+      .catch((err) => {
+        if (err.name === 'NotFound') {
+          next(new app.errors.NotFound());
+        } else {
+          next(err);
+        }
+      });
   };
 };

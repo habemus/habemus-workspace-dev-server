@@ -4,7 +4,11 @@ const url = require('url');
 // third-party
 const Bluebird = require('bluebird');
 
-const PARSING_STRATEGIES = ['FROM_HOSTNAME', 'FROM_QUERY'];
+// own
+const aux = require('./auxiliary');
+
+// constants
+const HTTP_RE = /^https?:\/\//;
 
 /**
  * Returns a middleware that parses the code from the subdomain.
@@ -12,20 +16,29 @@ const PARSING_STRATEGIES = ['FROM_HOSTNAME', 'FROM_QUERY'];
  * @param  {Object} options
  * @return {Express middleware Function}
  */
-function parseFromHost(app, options) {
-  if (!options.host) {
-    throw new Error('host is required');
-  }
-  
+module.exports = function (app, options) {
+
+  var hostname = HTTP_RE.test(options.host) ?
+    url.parse(options.host).hostname : hostname;
+
   /**
    * Regular expression that matches a subdomain
    * of the passed host.
    * @type {RegExp}
    */
-  const ID_REGEXP = new RegExp('(.+)\\.' + url.parse(options.host).hostname + '$');
+  const CODE_REGEXP = new RegExp('(.+)\\.' + hostname + '$');
 
-  return function parseWorkspaceIdFromHost(req, res, next) {
-    var match = req.hostname.match(ID_REGEXP);
+  /**
+   * Method to retrieve the domain from the request object
+   */
+  var _domain = options.domain || function (req) {
+    return req.params.domain;
+  };
+
+  return function parseCode(req, res, next) {
+
+    var domain = aux.evalOpt(_domain, req);
+    var match  = domain.match(CODE_REGEXP);
 
     if (!match) {
 
@@ -37,49 +50,4 @@ function parseFromHost(app, options) {
     }
 
   };
-}
-
-/**
- * Returns a middleware that parses the code from the subdomain.
- * @param  {Express app} app
- * @param  {Object} options
- * @return {Express middleware Function}
- */
-function parseFromQuery(app, options) {
-  return function (req, res, next) {
-
-    var code = req.query.code;
-
-    if (!code) {
-      next(new app.errors.NotFound('code', 'required'));
-    } else {
-
-      req.code = code;
-      next();
-    }
-
-  }
-}
-
-/**
- * Meta middleware generator.
- * Simply passes the arguments to the actual middleware generator.
- * Returns a middleware that parses the code from the subdomain.
- * @param  {Express app} app
- * @param  {Object} options
- * @return {Express middleware Function}
- */
-module.exports = function (app, options) {
-
-  var strategy = options.strategy;
-
-  switch (strategy) {
-    case 'FROM_HOSTNAME':
-      return parseFromHost(app, options);
-    case 'FROM_QUERY':
-      return parseFromQuery(app, options);
-    default: 
-      throw new Error('Invalid strategy');
-  }
-
 };

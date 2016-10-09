@@ -87,11 +87,13 @@ describe('WorkspaceServer workspace serving', function () {
 
     var $original = cheerio.load(fileContents);
 
+    var domain = projectCode + '.habemus.io';
+
     return new Bluebird((resolve, reject) => {
-      superagent.get(ASSETS.serverURI + '/' + file)
-        .query({
-          code: projectCode,
-        })
+
+      var reqURL = ASSETS.serverURI + '/workspace/' + domain + '/' + file;
+
+      superagent.get(reqURL)
         .end((err, res) => {
 
           if (err) {
@@ -112,9 +114,10 @@ describe('WorkspaceServer workspace serving', function () {
 
   });
 
-  it('should not serve files if no workspaceCode is passed', function () {
+  it('should not serve files if no projectCode is found', function () {
+
     return new Bluebird((resolve, reject) => {
-      superagent.get(ASSETS.serverURI + '/index.html')
+      superagent.get(ASSETS.serverURI + '/workspace/some.other.domain.com/index.html')
         .end((err, res) => {
           if (err) {
             res.statusCode.should.equal(404);
@@ -127,12 +130,9 @@ describe('WorkspaceServer workspace serving', function () {
     });
   });
 
-  it('should not serve files if the passed workspaceCode does not exist', function () {
+  it('should not serve files if the passed projectCode does not exist', function () {
     return new Bluebird((resolve, reject) => {
-      superagent.get(ASSETS.serverURI + '/index.html')
-        .query({
-          workspaceCode: 'fake-workspace',
-        })
+      superagent.get(ASSETS.serverURI + '/workspace/fake-workspace.habemus.io/index.html')
         .end((err, res) => {
           if (err) {
             res.statusCode.should.equal(404);
@@ -147,7 +147,7 @@ describe('WorkspaceServer workspace serving', function () {
 
   it('should return 404 if the requested path does not exit', function () {
     return new Bluebird((resolve, reject) => {
-      superagent.get(ASSETS.serverURI + '/file-that-does-not-exist.html')
+      superagent.get(ASSETS.serverURI + '/workspace/my-project.habemus.io/file-that-does-not-exist.html')
         .end((err, res) => {
           if (err) {
             res.statusCode.should.equal(404);
@@ -165,8 +165,10 @@ describe('WorkspaceServer workspace serving', function () {
     var projectCode = ASSETS.workspace.projectCode;
     var file        = 'index.html';
 
+    var domain = projectCode + '.habemus.io';
+
     return new Bluebird((resolve, reject) => {
-      superagent.get(ASSETS.serverURI + '/' + file)
+      superagent.get(ASSETS.serverURI + '/workspace/' + domain + '/' + file)
         .query({
           code: projectCode,
         })

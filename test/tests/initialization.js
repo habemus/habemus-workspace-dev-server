@@ -43,40 +43,13 @@ describe('WorkspaceServer initialization', function () {
     });
   });
 
-  it('should require an codeParsingStrategy option to be passed', function () {
+  it('should require a `host` option to be passed', function () {
     var options = aux.genOptions();
 
-    delete options.codeParsingStrategy;
+    delete options.host;
 
     assert.throws(function () {
       createWorkspaceServerApp(options);
     });
-  });
-
-  it('should require a valid codeParsingStrategy option to be passed', function () {
-    var options = aux.genOptions();
-
-    options.codeParsingStrategy = 'INVALID_STRATEGY';
-
-    var app = createWorkspaceServerApp(options);
-
-    return app.ready.then(aux.errorExpected)
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-
-  it('should require a host option if the codeParsingStrategy is FROM_HOSTNAME', function () {
-    var options = aux.genOptions();
-
-    options.codeParsingStrategy = 'FROM_HOSTNAME';
-    delete options.host;
-
-    return createWorkspaceServerApp(options)
-      .ready
-      .then(aux.errorExpected)
-      .catch((err) => {
-        console.log(err);
-      });
   });
 });
