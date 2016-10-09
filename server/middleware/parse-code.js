@@ -19,7 +19,7 @@ const HTTP_RE = /^https?:\/\//;
 module.exports = function (app, options) {
 
   var hostname = HTTP_RE.test(options.host) ?
-    url.parse(options.host).hostname : hostname;
+    url.parse(options.host).hostname : options.host;
 
   /**
    * Regular expression that matches a subdomain
