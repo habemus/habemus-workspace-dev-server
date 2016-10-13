@@ -15,13 +15,10 @@ module.exports = function (app, options) {
     app.middleware.loadWorkspaceFsRoot({
       hWorkspaceToken: options.hWorkspaceToken,
 
-      // set the projectRoot to have the workspaceFsRoot
-      // as the projectRoot is the property
+      // set the fsRoot to have the workspaceFsRoot
+      // as the fsRoot is the property
       // used by dev-server-html5
-      // 
-      // TODO: change that property to a more neutral one,
-      // such as `fsRoot`. Work must be done in dev-server-html5
-      as: 'projectRoot',
+      as: 'fsRoot',
     }),
     devServerHTML5({
       apiVersion: options.apiVersion,

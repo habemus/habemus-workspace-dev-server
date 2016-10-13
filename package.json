@@ -13,6 +13,7 @@
     "dev-server-html5": "git+ssh://git@bitbucket.org/habemus-tutti/dev-server-html5.git",
     "express": "^4.14.0",
     "h-workspace-client": "git+ssh://git@bitbucket.org/habemus-tutti/h-workspace-client.git",
+    "path-to-regexp": "^1.6.0",
     "root-path-builder": "git+ssh://git+ssh://git@bitbucket.org/habemus-tutti/root-path-builder.git"
   },
   "devDependencies": {
