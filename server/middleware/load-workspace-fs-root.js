@@ -49,7 +49,8 @@ module.exports = function (app, options) {
       })
       .catch((err) => {
         if (err.name === 'NotFound') {
-          next(new app.errors.NotFound());
+          // the project was not found
+          next(new app.errors.WorkspaceNotFound());
         } else {
           next(err);
         }

@@ -1,3 +1,13 @@
+// native
+const fs   = require('fs');
+const path = require('path');
+
+// own
+const WORKSPACE_NOT_FOUND_TEMPLATE = fs.readFileSync(
+  path.join(__dirname, '../templates/workspace-not-found.html'),
+  'utf8'
+);
+
 module.exports = function (app, options) {
 
   app.use(function (err, req, res, next) {
@@ -13,6 +23,9 @@ module.exports = function (app, options) {
           break;
         case 'NotFound':
           res.status(404).end();
+          break;
+        case 'WorkspaceNotFound':
+          res.status(404).send(WORKSPACE_NOT_FOUND_TEMPLATE);
           break;
         default:
           next(err);

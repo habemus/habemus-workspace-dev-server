@@ -21,6 +21,13 @@ function NotFound(identifier) {
 util.inherits(NotFound, HWorkspaceServerError);
 NotFound.prototype.name = 'NotFound';
 
+function WorkspaceNotFound(identifier) {
+  HWorkspaceServerError.call(this, 'project not found ' + identifier);
+}
+util.inherits(WorkspaceNotFound, HWorkspaceServerError);
+WorkspaceNotFound.prototype.name = 'WorkspaceNotFound';
+
 exports.HWorkspaceServerError = HWorkspaceServerError;
 exports.InvalidOption         = InvalidOption;
 exports.NotFound              = NotFound;
+exports.WorkspaceNotFound     = WorkspaceNotFound;
