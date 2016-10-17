@@ -1,46 +1,37 @@
-// native dependencies
+// native
 const http = require('http');
-const fs   = require('fs');
+
+// third-party
+const envOptions = require('@habemus/env-options');
 
 // internal dependencies
-const pkg = require('../package.json');
+const hWorkspaceServer = require('../server');
 
-// internal dependencies
-const createWorkspaceServer = require('../server');
+var options = envOptions({
+  port: 'env:PORT',
+  apiVersion: 'pkg:version',
+  fsRoot: 'env:FS_ROOT',
+  host: 'env:HOST',
 
-var MONGODB_URI;
+  injectScripts: 'list:INJECT_SCRIPTS',
+  hWorkspaceURI: 'env:H_WORKSPACE_URI',
+  hWorkspaceToken: 'fs:H_WORKSPACE_TOKEN_PATH',
+});
 
-if (process.env.NODE_ENV === 'production') {
-  // MONGODB_URI loading strategy is different for production and development environments
-  if (!process.env.MONGODB_URI_PATH) {
-    throw new Error('MONGODB_URI_PATH is required');
-  }
-  MONGODB_URI = fs.readFileSync(process.env.MONGODB_URI_PATH, 'utf8');
-} else {
-  // in development just get it straight from the environment
-  MONGODB_URI = process.env.MONGODB_URI;
-}
+// instantiate the app
+var app = hWorkspaceServer(options);
 
-var options = {
-  port: process.env.PORT,
-
-  apiVersion: pkg.version,
-  fsRoot: process.env.WORKSPACE_FS_ROOT,
-
-  mongodbURI: MONGODB_URI,
-
-  codeParsingStrategy: process.env.CODE_PARSING_STRATEGY,
-  host: process.env.HOST,
-
-  injectScripts: process.env.INJECT_SCRIPTS,
-};
-
-var app = createWorkspaceServer(options);
+app.ready.then(() => {
+  console.log('h-workspace-server setup ready');
+})
+.catch((err) => {
+  console.log('h-workspace-server setup error', err);
+});
 
 // create http server and pass express app as callback
 var server = http.createServer(app);
 
 // start listening
 server.listen(options.port, function () {
-  console.log('h-dev-cloud-workspace-server listening at port %s', options.port);
+  console.log('h-workspace-server listening at port %s', options.port);
 });
