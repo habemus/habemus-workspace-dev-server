@@ -48,6 +48,7 @@ module.exports = function (options) {
      */
     require('./error-handlers/h-workspace-server-error')(app, options);
     require('./error-handlers/dev-server-html5-error')(app, options);
+    require('./error-handlers/unknown-error')(app, options);
   });
 
   return app;
