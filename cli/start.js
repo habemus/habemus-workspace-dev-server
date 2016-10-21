@@ -25,7 +25,8 @@ app.ready.then(() => {
   console.log('h-workspace-server setup ready');
 })
 .catch((err) => {
-  console.log('h-workspace-server setup error', err);
+  console.warn('h-workspace-server setup error', err);
+  process.exit(1);
 });
 
 // create http server and pass express app as callback

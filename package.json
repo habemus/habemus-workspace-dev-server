@@ -1,6 +1,6 @@
 {
   "name": "h-workspace-server",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "main": "server/index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@habemus/env-options": "^0.2.0",
     "bluebird": "^3.4.1",
     "dev-server-html5": "git+ssh://git@bitbucket.org/habemus-tutti/dev-server-html5.git",
     "express": "^4.14.0",
