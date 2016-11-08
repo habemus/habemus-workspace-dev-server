@@ -20,11 +20,18 @@ module.exports = function (app, options) {
       // used by dev-server-html5
       as: 'fsRoot',
     }),
+    function (req, res, next) {
+      req.domain = req.params.domain;
+      next();
+    },
     devServerHTML5({
       apiVersion: options.apiVersion,
       htmlInjections: injectScripts.map((scriptSrc) => {
         return '<script src="' + scriptSrc + '"></script>';
       }),
+      baseUrl: function (req) {
+        return 'http://' + req.domain;
+      }
     })
   );
 
