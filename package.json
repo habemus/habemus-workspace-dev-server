@@ -1,6 +1,6 @@
 {
   "name": "h-workspace-server",
-  "version": "0.3.6",
+  "version": "0.3.6-browserify",
   "description": "",
   "main": "server/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "dependencies": {
     "@habemus/env-options": "^0.2.0",
     "bluebird": "^3.4.1",
-    "dev-server-html5": "git+ssh://git@bitbucket.org/habemus-tutti/dev-server-html5.git",
+    "dev-server-html5": "git+ssh://git@bitbucket.org/habemus-tutti/dev-server-html5.git#browserify",
     "express": "^4.14.0",
     "h-workspace-client": "git+ssh://git@bitbucket.org/habemus-tutti/h-workspace-client.git",
     "path-to-regexp": "^1.6.0",

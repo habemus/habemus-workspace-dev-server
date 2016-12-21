@@ -31,7 +31,9 @@ module.exports = function (app, options) {
       }),
       baseUrl: function (req) {
         return 'http://' + req.domain;
-      }
+      },
+      supportDir: options.supportDir,
+      browserifyBundleRegistryURI: options.browserifyBundleRegistryURI,
     })
   );
 
