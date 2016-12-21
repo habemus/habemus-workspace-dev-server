@@ -13,6 +13,9 @@ var options = envOptions({
   fsRoot: 'env:FS_ROOT',
   host: 'env:HOST',
 
+  supportDir: 'env:SUPPORT_DIR',
+  browserifyBundleRegistryURI: 'env:BROWSERIFY_BUNDLE_REGISTRY_URI',
+
   injectScripts: 'list:INJECT_SCRIPTS',
   hWorkspaceURI: 'env:H_WORKSPACE_URI',
   hWorkspaceToken: 'fs:H_WORKSPACE_TOKEN_PATH',

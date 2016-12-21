@@ -16,6 +16,8 @@ module.exports = function (app, options) {
    */
   app.use(function (err, req, res, next) {
 
+    console.warn(err);
+
     res.status(500).send(UNKNOWN_ERROR_TEMPLATE);
     
   });
