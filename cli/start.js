@@ -24,18 +24,18 @@ var options = envOptions({
 // instantiate the app
 var app = hWorkspaceServer(options);
 
+// create http server and pass express app as callback
+var server = http.createServer(app);
+
 app.ready.then(() => {
   console.log('h-workspace-server setup ready');
+
+  // start listening
+  server.listen(options.port, function () {
+    console.log('h-workspace-server listening at port %s', options.port);
+  });
 })
 .catch((err) => {
   console.warn('h-workspace-server setup error', err);
   process.exit(1);
-});
-
-// create http server and pass express app as callback
-var server = http.createServer(app);
-
-// start listening
-server.listen(options.port, function () {
-  console.log('h-workspace-server listening at port %s', options.port);
 });
