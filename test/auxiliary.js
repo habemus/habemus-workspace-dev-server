@@ -5,7 +5,6 @@ const http = require('http');
 // third-party dependencies
 const Bluebird      = require('bluebird');
 const enableDestroy = require('server-destroy');
-const MongoClient   = require('mongodb').MongoClient;
 const fse           = require('fs-extra');
 
 // mocks
@@ -15,8 +14,6 @@ const mockPrivateHWorkspace = require('h-workspace-client/mock/private');
 const FIXTURES_ROOT_PATH = path.join(__dirname, 'fixtures');
 const TMP_ROOT_PATH = path.join(__dirname, 'tmp');
 
-const TEST_DB_URI = 'mongodb://localhost:27017/h-dev-test-db';
-
 exports.defaultOptions = {
   apiVersion: '0.0.0',
   fsRoot: TMP_ROOT_PATH,
@@ -24,6 +21,9 @@ exports.defaultOptions = {
 
   hWorkspaceURI: 'http://localhost:9001',
   hWorkspaceToken: 'some-workspace-token',
+
+  supportDir: '.habemus',
+  browserifyBundleRegistryURI: 'https://browserify-bundle-registry.example',
 };
 
 /**
@@ -134,30 +134,9 @@ exports.setup = function () {
 
   exports.registerTeardown(function () {
     fse.emptyDirSync(TMP_ROOT_PATH);
-  })
+  });
 
-
-
-  // connect to the database and drop it
-  return MongoClient.connect(TEST_DB_URI)
-    .then((db) => {
-
-      _assets.db = db;
-
-      // register db teardown
-      exports.registerTeardown(function dropDatabase() {
-        // drop database
-        return _assets.db.dropDatabase().then(() => {
-          return _assets.db.close();
-        });
-      });
-
-      return _assets.db.dropDatabase();
-    }).then(() => {
-
-      // finally return assets
-      return _assets;
-    });
+  return Bluebird.resolve(_assets);
 };
 
 var TEARDOWN_CALLBACKS = [];
