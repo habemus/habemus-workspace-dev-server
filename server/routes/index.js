@@ -26,7 +26,7 @@ module.exports = function (app, options) {
     },
     devServerHTML5({
       apiVersion: options.apiVersion,
-      htmlInjections: injectScripts.map((scriptSrc) => {
+      htmlInjectors: injectScripts.map((scriptSrc) => {
         return '<script src="' + scriptSrc + '"></script>';
       }),
       baseUrl: function (req) {
