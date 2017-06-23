@@ -34,6 +34,14 @@ module.exports = function (app, options) {
       },
       supportDir: options.supportDir,
       browserifyBundleRegistryURI: options.browserifyBundleRegistryURI,
+      processors: {
+        'application/javascript': [
+          require('dev-server-html5/processors/js/browserify')
+        ],
+        'text/css': [
+          require('dev-server-html5/processors/css/autoprefixer'),
+        ],
+      },
     })
   );
 
