@@ -1,5 +1,5 @@
-// third-party
-const devServerHTML5 = require('dev-server-html5');
+const devServer = require('habemus-dev-server');
+const devServerProcessorCSS = require('habemus-dev-server-processor-css')
 
 module.exports = function (app, options) {
 
@@ -24,7 +24,7 @@ module.exports = function (app, options) {
       req.domain = req.params.domain;
       next();
     },
-    devServerHTML5({
+    devServer({
       apiVersion: options.apiVersion,
       htmlInjectors: injectScripts.map((scriptSrc) => {
         return '<script src="' + scriptSrc + '"></script>';
@@ -35,11 +35,8 @@ module.exports = function (app, options) {
       supportDir: options.supportDir,
       browserifyBundleRegistryURI: options.browserifyBundleRegistryURI,
       processors: {
-        'application/javascript': [
-          require('dev-server-html5/processors/js/browserify')
-        ],
         'text/css': [
-          require('dev-server-html5/processors/css/autoprefixer'),
+          devServerProcessorCSS,
         ],
       },
     })

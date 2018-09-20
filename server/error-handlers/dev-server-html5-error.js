@@ -3,8 +3,9 @@ const fs   = require('fs');
 const path = require('path');
 
 // third-party
-const devServerHTML5 = require('dev-server-html5');
 const pathToRegExp   = require('path-to-regexp');
+
+const devServer = require('habemus-dev-server');
 
 // templates
 const TEMPLATES = {
@@ -33,7 +34,7 @@ module.exports = function (app, options) {
    */
   app.use('/workspace/:domain', function (err, req, res, next) {
 
-    if (err instanceof devServerHTML5.errors.DevServerHTML5Error) {
+    if (err instanceof devServer.errors.DevServerHTML5Error) {
 
       switch (err.name) {
         case 'NotFound':

@@ -16,12 +16,12 @@ module.exports = function (options) {
   if (!options.hWorkspaceToken) { throw new Error('hWorkspaceToken is required'); }
   
   /**
-   * Options for dev-server-html5
+   * Options for habemusDevServer
    */
   if (!options.supportDir) { throw new Error('supportDir is required'); }
-  if (!options.browserifyBundleRegistryURI) {
-    throw new Error('browserifyBundleRegistryURI is required');
-  }
+  // if (!options.browserifyBundleRegistryURI) {
+  //   throw new Error('browserifyBundleRegistryURI is required');
+  // }
 
   /**
    * The main express router

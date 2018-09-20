@@ -1,5 +1,5 @@
 // third-party dependencies
-const PrivateHWorkspaceClient = require('h-workspace-client/private');
+const PrivateHWorkspaceClient = require('habemus-workspace-client/private');
 
 module.exports = function (app, options) {
   return new PrivateHWorkspaceClient({

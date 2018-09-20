@@ -9,7 +9,7 @@ const fse           = require('fs-extra');
 
 // mocks
 const mockery       = require('mockery');
-const mockPrivateHWorkspace = require('h-workspace-client/mock/private');
+const mockPrivateHWorkspace = require('habemus-workspace-client/mock/private');
 
 const FIXTURES_ROOT_PATH = path.join(__dirname, 'fixtures');
 const TMP_ROOT_PATH = path.join(__dirname, 'tmp');
@@ -42,9 +42,9 @@ exports.enableHMocks = function () {
     },
   });
 
-  // mock h-workspace-client/private
+  // mock habemus-workspace-client/private
   mockery.registerMock(
-    'h-workspace-client/private',
+    'habemus-workspace-client/private',
     hWorkspaceMock
   );
 

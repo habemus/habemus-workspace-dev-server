@@ -1,6 +1,6 @@
 {
-  "name": "h-workspace-server",
-  "version": "1.1.1",
+  "name": "habemus-workspace-website-server",
+  "version": "2.0.0",
   "description": "",
   "main": "server/index.js",
   "scripts": {
@@ -11,11 +11,12 @@
   "dependencies": {
     "@habemus/env-options": "^0.2.0",
     "bluebird": "^3.4.1",
-    "dev-server-html5": "git+ssh://git@bitbucket.org/habemus-tutti/dev-server-html5.git#web-io",
     "express": "^4.14.0",
-    "h-workspace-client": "git+ssh://git@bitbucket.org/habemus-tutti/h-workspace-client.git",
+    "habemus-dev-server": "git+https://github.com/habemus/habemus-dev-server.git",
+    "habemus-dev-server-processor-css": "git+https://github.com/habemus/habemus-dev-server-processor-css.git",
+    "habemus-workspace-client": "git+https://github.com/habemus/habemus-workspace-client.git",
     "path-to-regexp": "^1.6.0",
-    "root-path-builder": "git+ssh://git+ssh://git@bitbucket.org/habemus-tutti/root-path-builder.git"
+    "root-path-builder": "^1.0.0"
   },
   "devDependencies": {
     "bluebird": "^3.4.1",
